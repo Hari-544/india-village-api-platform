@@ -20,7 +20,7 @@ export default function Home() {
     useEffect(() => {
         setLoading(true);
         axios
-            .get('http://localhost:5000/api/location/states')
+            .get('https://village-api-backend-23a2.onrender.com/api/location/states')
             .then((res) => {
                 setStates(res.data);
                 setError('');
@@ -44,7 +44,7 @@ export default function Home() {
         try {
             setLoading(true);
             const res = await axios.get(
-                `http://localhost:5000/api/location/districts/${state}`
+                `https://village-api-backend-23a2.onrender.com/api/location/districts/${state}`
             );
             setDistricts(res.data);
             setSubdistricts([]);
@@ -72,7 +72,7 @@ export default function Home() {
         try {
             setLoading(true);
             const res = await axios.get(
-                `http://localhost:5000/api/location/subdistricts/${district}`
+                `https://village-api-backend-23a2.onrender.com/api/location/subdistricts/${district}`
             );
             setSubdistricts(res.data);
             setVillages([]);
@@ -97,7 +97,7 @@ export default function Home() {
         try {
             setLoading(true);
             const res = await axios.get(
-                `http://localhost:5000/api/location/villages/${subdistrict}`
+                `https://village-api-backend-23a2.onrender.com/api/location/villages/${subdistrict}`
             );
             setVillages(res.data);
             setSelectedSubdistrict(subdistrict);
@@ -122,7 +122,7 @@ export default function Home() {
         try {
             setLoading(true);
             const res = await axios.get(
-                `http://localhost:5000/api/location/search?q=${value}`
+                `https://village-api-backend-23a2.onrender.com/api/location/search?q=${value}`
             );
             setSearchResults(res.data);
             setError('');
