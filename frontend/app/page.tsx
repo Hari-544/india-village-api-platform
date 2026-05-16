@@ -1,9 +1,9 @@
-'use client';
+ 'use client';
 
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
-export default function Home() {
+export default function Page() {
     const [states, setStates] = useState<any[]>([]);
     const [districts, setDistricts] = useState<any[]>([]);
     const [subdistricts, setSubdistricts] = useState<any[]>([]);
@@ -20,7 +20,7 @@ export default function Home() {
     useEffect(() => {
         setLoading(true);
         axios
-            .get('https://village-api-backend-23a2.onrender.com/api/location/states')
+            .get('/api/location/states')
             .then((res) => {
                 setStates(res.data);
                 setError('');
@@ -32,7 +32,6 @@ export default function Home() {
             .finally(() => setLoading(false));
     }, []);
 
-    // Load Districts
     const loadDistricts = async (state: any) => {
         if (!state) {
             setDistricts([]);
@@ -43,9 +42,7 @@ export default function Home() {
         }
         try {
             setLoading(true);
-            const res = await axios.get(
-                `https://village-api-backend-23a2.onrender.com/api/location/districts/${state}`
-            );
+            const res = await axios.get(`/api/location/districts/${encodeURIComponent(state)}`);
             setDistricts(res.data);
             setSubdistricts([]);
             setVillages([]);
@@ -61,7 +58,6 @@ export default function Home() {
         }
     };
 
-    // Load Subdistricts
     const loadSubdistricts = async (district: any) => {
         if (!district) {
             setSubdistricts([]);
@@ -71,9 +67,7 @@ export default function Home() {
         }
         try {
             setLoading(true);
-            const res = await axios.get(
-                `https://village-api-backend-23a2.onrender.com/api/location/subdistricts/${district}`
-            );
+            const res = await axios.get(`/api/location/subdistricts/${encodeURIComponent(district)}`);
             setSubdistricts(res.data);
             setVillages([]);
             setSelectedDistrict(district);
@@ -87,7 +81,6 @@ export default function Home() {
         }
     };
 
-    // Load Villages
     const loadVillages = async (subdistrict: any) => {
         if (!subdistrict) {
             setVillages([]);
@@ -96,9 +89,7 @@ export default function Home() {
         }
         try {
             setLoading(true);
-            const res = await axios.get(
-                `https://village-api-backend-23a2.onrender.com/api/location/villages/${subdistrict}`
-            );
+            const res = await axios.get(`/api/location/villages/${encodeURIComponent(subdistrict)}`);
             setVillages(res.data);
             setSelectedSubdistrict(subdistrict);
             setError('');
@@ -110,7 +101,6 @@ export default function Home() {
         }
     };
 
-    // Search Villages
     const searchVillage = async (value: any) => {
         setSearch(value);
 
@@ -121,9 +111,7 @@ export default function Home() {
 
         try {
             setLoading(true);
-            const res = await axios.get(
-                `https://village-api-backend-23a2.onrender.com/api/location/search?q=${value}`
-            );
+            const res = await axios.get(`/api/location/search?q=${encodeURIComponent(value)}`);
             setSearchResults(res.data);
             setError('');
         } catch (err) {
@@ -146,22 +134,13 @@ export default function Home() {
                             </div>
                         </div>
                         <div className="hidden md:flex items-center space-x-8">
-                            <a
-                                href="#"
-                                className="text-slate-300 hover:text-white transition duration-200 hover:underline underline-offset-4"
-                            >
+                            <a href="#" className="text-slate-300 hover:text-white transition duration-200 hover:underline underline-offset-4">
                                 Dashboard
                             </a>
-                            <a
-                                href="#"
-                                className="text-slate-300 hover:text-white transition duration-200 hover:underline underline-offset-4"
-                            >
+                            <a href="#" className="text-slate-300 hover:text-white transition duration-200 hover:underline underline-offset-4">
                                 Documentation
                             </a>
-                            <a
-                                href="#"
-                                className="text-slate-300 hover:text-white transition duration-200 hover:underline underline-offset-4"
-                            >
+                            <a href="#" className="text-slate-300 hover:text-white transition duration-200 hover:underline underline-offset-4">
                                 Pricing
                             </a>
                         </div>
@@ -176,33 +155,24 @@ export default function Home() {
                         India Village API Platform
                     </h1>
                     <p className="text-lg md:text-xl text-slate-400 leading-relaxed mb-8">
-                        Production-grade SaaS platform providing village-level geographical APIs for
-                        India. Search, autocomplete, and hierarchical address APIs for modern
-                        applications.
+                        Production-grade SaaS platform providing village-level geographical APIs for India. Search, autocomplete, and hierarchical address APIs for modern applications.
                     </p>
                 </div>
 
                 {/* STATS SECTION */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 py-8">
-                    {['6+ Lakh Villages', '700+ Districts', 'Fast REST APIs', 'Production Ready'].map(
-                        (item, index) => (
-                            <div
-                                key={index}
-                                className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 hover:bg-slate-800 hover:border-slate-600 transition duration-300 transform hover:scale-105"
-                            >
-                                <p className="text-xl font-semibold text-cyan-300">{item}</p>
-                            </div>
-                        )
-                    )}
+                    {['6+ Lakh Villages', '700+ Districts', 'Fast REST APIs', 'Production Ready'].map((item, index) => (
+                        <div key={index} className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 hover:bg-slate-800 hover:border-slate-600 transition duration-300 transform hover:scale-105">
+                            <p className="text-xl font-semibold text-cyan-300">{item}</p>
+                        </div>
+                    ))}
                 </div>
             </div>
 
             {/* ERROR ALERT */}
             {error && (
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-                    <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 text-red-300">
-                        ⚠️ {error}
-                    </div>
+                    <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 text-red-300">⚠️ {error}</div>
                 </div>
             )}
 
@@ -221,27 +191,15 @@ export default function Home() {
                 <h2 className="text-3xl font-bold mb-8 text-cyan-300">Village Search</h2>
 
                 <div className="mb-8">
-                    <input
-                        type="text"
-                        placeholder="Search for villages..."
-                        value={search}
-                        onChange={(e) => searchVillage(e.target.value)}
-                        className="w-full md:w-96 px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition duration-200"
-                    />
+                    <input type="text" placeholder="Search for villages..." value={search} onChange={(e) => searchVillage(e.target.value)} className="w-full md:w-96 px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition duration-200" />
                 </div>
 
-                {/* SEARCH RESULTS */}
                 {search.length >= 2 && searchResults.length > 0 && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {searchResults.map((item, index) => (
-                            <div
-                                key={index}
-                                className="bg-slate-800/50 border border-slate-700 rounded-lg p-5 hover:bg-slate-800 hover:border-cyan-500/50 transition duration-300 cursor-pointer"
-                            >
+                            <div key={index} className="bg-slate-800/50 border border-slate-700 rounded-lg p-5 hover:bg-slate-800 hover:border-cyan-500/50 transition duration-300 cursor-pointer">
                                 <h3 className="text-lg font-semibold text-cyan-300 mb-2">{item.village}</h3>
-                                <p className="text-slate-400 text-sm">
-                                    <span className="text-slate-500">📍</span> {item.sub_district}, {item.district}, {item.state}
-                                </p>
+                                <p className="text-slate-400 text-sm"><span className="text-slate-500">📍</span> {item.sub_district}, {item.district}, {item.state}</p>
                             </div>
                         ))}
                     </div>
@@ -259,89 +217,53 @@ export default function Home() {
                 <h2 className="text-3xl font-bold mb-8 text-cyan-300">Hierarchical Selection</h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {/* STATE */}
                     <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 hover:border-slate-600 transition duration-300">
                         <label className="block text-sm font-medium text-slate-300 mb-3">State</label>
-                        <select
-                            value={selectedState}
-                            onChange={(e) => loadDistricts(e.target.value)}
-                            disabled={loading || states.length === 0}
-                            className="w-full px-4 py-3 rounded-lg bg-slate-700 border border-slate-600 text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+                        <select value={selectedState} onChange={(e) => loadDistricts(e.target.value)} disabled={loading || states.length === 0} className="w-full px-4 py-3 rounded-lg bg-slate-700 border border-slate-600 text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                             <option value="">Select State</option>
                             {states.map((item, index) => (
-                                <option key={index} value={item.state}>
-                                    {item.state}
-                                </option>
+                                <option key={index} value={item.state}>{item.state}</option>
                             ))}
                         </select>
                     </div>
 
-                    {/* DISTRICT */}
                     <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 hover:border-slate-600 transition duration-300">
                         <label className="block text-sm font-medium text-slate-300 mb-3">District</label>
-                        <select
-                            value={selectedDistrict}
-                            onChange={(e) => loadSubdistricts(e.target.value)}
-                            disabled={loading || districts.length === 0}
-                            className="w-full px-4 py-3 rounded-lg bg-slate-700 border border-slate-600 text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+                        <select value={selectedDistrict} onChange={(e) => loadSubdistricts(e.target.value)} disabled={loading || districts.length === 0} className="w-full px-4 py-3 rounded-lg bg-slate-700 border border-slate-600 text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                             <option value="">Select District</option>
                             {districts.map((item, index) => (
-                                <option key={index} value={item.district}>
-                                    {item.district}
-                                </option>
+                                <option key={index} value={item.district}>{item.district}</option>
                             ))}
                         </select>
                     </div>
 
-                    {/* SUBDISTRICT */}
                     <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 hover:border-slate-600 transition duration-300">
                         <label className="block text-sm font-medium text-slate-300 mb-3">Subdistrict</label>
-                        <select
-                            value={selectedSubdistrict}
-                            onChange={(e) => loadVillages(e.target.value)}
-                            disabled={loading || subdistricts.length === 0}
-                            className="w-full px-4 py-3 rounded-lg bg-slate-700 border border-slate-600 text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+                        <select value={selectedSubdistrict} onChange={(e) => loadVillages(e.target.value)} disabled={loading || subdistricts.length === 0} className="w-full px-4 py-3 rounded-lg bg-slate-700 border border-slate-600 text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                             <option value="">Select Subdistrict</option>
                             {subdistricts.map((item, index) => (
-                                <option key={index} value={item.sub_district}>
-                                    {item.sub_district}
-                                </option>
+                                <option key={index} value={item.sub_district}>{item.sub_district}</option>
                             ))}
                         </select>
                     </div>
 
-                    {/* VILLAGE */}
                     <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 hover:border-slate-600 transition duration-300">
                         <label className="block text-sm font-medium text-slate-300 mb-3">Village</label>
-                        <select
-                            disabled={loading || villages.length === 0}
-                            className="w-full px-4 py-3 rounded-lg bg-slate-700 border border-slate-600 text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+                        <select disabled={loading || villages.length === 0} className="w-full px-4 py-3 rounded-lg bg-slate-700 border border-slate-600 text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                             <option value="">Select Village</option>
                             {villages.map((item, index) => (
-                                <option key={index} value={item.village}>
-                                    {item.village}
-                                </option>
+                                <option key={index} value={item.village}>{item.village}</option>
                             ))}
                         </select>
                     </div>
                 </div>
 
-                {/* VILLAGE RESULTS */}
                 {villages.length > 0 && (
                     <div className="mt-8">
-                        <p className="text-slate-400 mb-4">
-                            Found <span className="text-cyan-300 font-semibold">{villages.length}</span> villages
-                        </p>
+                        <p className="text-slate-400 mb-4">Found <span className="text-cyan-300 font-semibold">{villages.length}</span> villages</p>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto pr-2">
                             {villages.map((item, index) => (
-                                <div
-                                    key={index}
-                                    className="bg-slate-700/30 border border-slate-600 rounded-lg p-4 hover:bg-slate-700/50 transition duration-200"
-                                >
+                                <div key={index} className="bg-slate-700/30 border border-slate-600 rounded-lg p-4 hover:bg-slate-700/50 transition duration-200">
                                     <p className="text-white font-medium">{item.village}</p>
                                 </div>
                             ))}
@@ -351,121 +273,32 @@ export default function Home() {
             </div>
 
             {/* API DOCUMENTATION */}
+            <div style={{ padding: '50px' }}>
+                <h1 style={{ marginBottom: '30px' }}>API Documentation</h1>
 
-<div
-    style={{
-        padding:'50px'
-    }}
->
+                <div style={{ background: '#1e293b', padding: '25px', borderRadius: '12px', marginBottom: '25px' }}>
+                    <h2>Get All States</h2>
+                    <p style={{ color: '#94a3b8' }}>Fetch all available states in India.</p>
+                    <div style={{ background: '#0f172a', padding: '15px', borderRadius: '8px', marginTop: '15px', overflowX: 'auto' }}>GET /api/location/states</div>
+                </div>
 
-    <h1
-        style={{
-            marginBottom:'30px'
-        }}
-    >
-        API Documentation
-    </h1>
+                <div style={{ background: '#1e293b', padding: '25px', borderRadius: '12px', marginBottom: '25px' }}>
+                    <h2>Get Districts</h2>
+                    <p style={{ color: '#94a3b8' }}>Fetch districts by state name.</p>
+                    <div style={{ background: '#0f172a', padding: '15px', borderRadius: '8px', marginTop: '15px', overflowX: 'auto' }}>GET /api/location/districts/ANDHRA%20PRADESH</div>
+                </div>
 
-    {/* STATES API */}
-
-    <div
-        style={{
-            background:'#1e293b',
-            padding:'25px',
-            borderRadius:'12px',
-            marginBottom:'25px'
-        }}
-    >
-
-        <h2>Get All States</h2>
-
-        <p style={{color:'#94a3b8'}}>
-            Fetch all available states in India.
-        </p>
-
-        <div
-            style={{
-                background:'#0f172a',
-                padding:'15px',
-                borderRadius:'8px',
-                marginTop:'15px',
-                overflowX:'auto'
-            }}
-        >
-            GET /api/location/states
-        </div>
-
-    </div>
-
-    {/* DISTRICTS API */}
-
-    <div
-        style={{
-            background:'#1e293b',
-            padding:'25px',
-            borderRadius:'12px',
-            marginBottom:'25px'
-        }}
-    >
-
-        <h2>Get Districts</h2>
-
-        <p style={{color:'#94a3b8'}}>
-            Fetch districts by state name.
-        </p>
-
-        <div
-            style={{
-                background:'#0f172a',
-                padding:'15px',
-                borderRadius:'8px',
-                marginTop:'15px',
-                overflowX:'auto'
-            }}
-        >
-            GET /api/location/districts/ANDHRA%20PRADESH
-        </div>
-
-    </div>
-
-    {/* SEARCH API */}
-
-    <div
-        style={{
-            background:'#1e293b',
-            padding:'25px',
-            borderRadius:'12px'
-        }}
-    >
-
-        <h2>Village Search API</h2>
-
-        <p style={{color:'#94a3b8'}}>
-            Search villages with autocomplete support.
-        </p>
-
-        <div
-            style={{
-                background:'#0f172a',
-                padding:'15px',
-                borderRadius:'8px',
-                marginTop:'15px',
-                overflowX:'auto'
-            }}
-        >
-            GET /api/location/search?q=ram
-        </div>
-
-    </div>
-
-</div>
+                <div style={{ background: '#1e293b', padding: '25px', borderRadius: '12px' }}>
+                    <h2>Village Search API</h2>
+                    <p style={{ color: '#94a3b8' }}>Search villages with autocomplete support.</p>
+                    <div style={{ background: '#0f172a', padding: '15px', borderRadius: '8px', marginTop: '15px', overflowX: 'auto' }}>GET /api/location/search?q=ram</div>
+                </div>
+            </div>
 
             {/* FOOTER */}
             <div className="border-t border-slate-800 mt-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <p className="text-slate-500 text-center">
-                        © 2024 India Village API Platform. All rights reserved.
-                    </p>
+                    <p className="text-slate-500 text-center">© 2024 India Village API Platform. All rights reserved.</p>
                 </div>
             </div>
         </div>

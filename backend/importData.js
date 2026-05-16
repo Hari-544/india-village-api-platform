@@ -5,8 +5,7 @@ const pool = require('./config/db');
 const fs = require('fs');
 const path = require('path');
 
-const datasetFolder =
-'C:\\Users\\hari4\\Downloads\\all-india-villages-master-list-excel\\dataset';
+const datasetFolder = process.env.DATASET_FOLDER || path.join(__dirname, 'dataset');
 
 async function importFiles() {
 
