@@ -1,4 +1,7 @@
-const router = require('express').Router();
+const express = require('express');
+
+const router = express.Router();
+
 const pool = require('../config/db');
 
 router.get('/search', async(req,res)=>{
