@@ -4,33 +4,50 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 const API_BASE =
-'https://village-api-backend-23a2.onrender.com/api/location';
+    process.env.NEXT_PUBLIC_API_BASE_URL || '/api/location';
+
+type StateItem = {
+    state: string;
+};
+
+type DistrictItem = {
+    district: string;
+};
+
+type SubdistrictItem = {
+    sub_district: string;
+};
+
+type VillageItem = {
+    village: string;
+    sub_district?: string;
+    district?: string;
+    state?: string;
+};
 
 export default function Page() {
 
-    const [states, setStates] = useState<any[]>([]);
-    const [districts, setDistricts] = useState<any[]>([]);
-    const [subdistricts, setSubdistricts] = useState<any[]>([]);
-    const [villages, setVillages] = useState<any[]>([]);
+    const [states, setStates] = useState<StateItem[]>([]);
+    const [districts, setDistricts] = useState<DistrictItem[]>([]);
+    const [subdistricts, setSubdistricts] = useState<SubdistrictItem[]>([]);
+    const [villages, setVillages] = useState<VillageItem[]>([]);
 
     const [selectedState, setSelectedState] = useState('');
     const [selectedDistrict, setSelectedDistrict] = useState('');
     const [selectedSubdistrict, setSelectedSubdistrict] = useState('');
 
     const [search, setSearch] = useState('');
-    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [searchResults, setSearchResults] = useState<VillageItem[]>([]);
 
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
     // LOAD STATES
 
     useEffect(() => {
 
-        setLoading(true);
-
         axios
-            .get(`${API_BASE}/states`)
+            .get<StateItem[]>(`${API_BASE}/states`)
             .then((res) => {
 
                 setStates(res.data);
@@ -53,7 +70,7 @@ export default function Page() {
 
     // LOAD DISTRICTS
 
-    const loadDistricts = async (state:any) => {
+    const loadDistricts = async (state: string) => {
 
         if (!state) {
 
@@ -69,7 +86,7 @@ export default function Page() {
 
             setLoading(true);
 
-            const res = await axios.get(
+            const res = await axios.get<DistrictItem[]>(
                 `${API_BASE}/districts/${encodeURIComponent(state)}`
             );
 
@@ -99,7 +116,7 @@ export default function Page() {
 
     // LOAD SUBDISTRICTS
 
-    const loadSubdistricts = async (district:any) => {
+    const loadSubdistricts = async (district: string) => {
 
         if (!district) {
 
@@ -114,7 +131,7 @@ export default function Page() {
 
             setLoading(true);
 
-            const res = await axios.get(
+            const res = await axios.get<SubdistrictItem[]>(
                 `${API_BASE}/subdistricts/${encodeURIComponent(district)}`
             );
 
@@ -142,7 +159,7 @@ export default function Page() {
 
     // LOAD VILLAGES
 
-    const loadVillages = async (subdistrict:any) => {
+    const loadVillages = async (subdistrict: string) => {
 
         if (!subdistrict) {
 
@@ -156,7 +173,7 @@ export default function Page() {
 
             setLoading(true);
 
-            const res = await axios.get(
+            const res = await axios.get<VillageItem[]>(
                 `${API_BASE}/villages/${encodeURIComponent(subdistrict)}`
             );
 
@@ -180,7 +197,7 @@ export default function Page() {
 
     // SEARCH VILLAGES
 
-    const searchVillage = async (value:any) => {
+    const searchVillage = async (value: string) => {
 
         setSearch(value);
 
@@ -195,7 +212,7 @@ export default function Page() {
 
             setLoading(true);
 
-            const res = await axios.get(
+            const res = await axios.get<VillageItem[]>(
                 `${API_BASE}/search?q=${encodeURIComponent(value)}`
             );
 

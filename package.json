@@ -1,0 +1,8 @@
+{
+  "name": "village-api-project-root",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "node backend/server.js"
+  }
+}
