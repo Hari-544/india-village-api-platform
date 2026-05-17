@@ -1,503 +1,141 @@
-'use client';
-
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-
-const API_BASE =
-    process.env.NEXT_PUBLIC_API_BASE_URL || '/api/location';
-
-type StateItem = {
-    state: string;
-};
-
-type DistrictItem = {
-    district: string;
-};
-
-type SubdistrictItem = {
-    sub_district: string;
-};
-
-type VillageItem = {
-    village: string;
-    sub_district?: string;
-    district?: string;
-    state?: string;
-};
-
-export default function Page() {
-
-    const [states, setStates] = useState<StateItem[]>([]);
-    const [districts, setDistricts] = useState<DistrictItem[]>([]);
-    const [subdistricts, setSubdistricts] = useState<SubdistrictItem[]>([]);
-    const [villages, setVillages] = useState<VillageItem[]>([]);
-
-    const [selectedState, setSelectedState] = useState('');
-    const [selectedDistrict, setSelectedDistrict] = useState('');
-    const [selectedSubdistrict, setSelectedSubdistrict] = useState('');
-
-    const [search, setSearch] = useState('');
-    const [searchResults, setSearchResults] = useState<VillageItem[]>([]);
-
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-
-    // LOAD STATES
-
-    useEffect(() => {
-
-        axios
-            .get<StateItem[]>(`${API_BASE}/states`)
-            .then((res) => {
-
-                setStates(res.data);
-                setError('');
-
-            })
-            .catch((err) => {
-
-                setError('Failed to load states');
-                console.log(err);
-
-            })
-            .finally(() => {
-
-                setLoading(false);
-
-            });
-
-    }, []);
-
-    // LOAD DISTRICTS
-
-    const loadDistricts = async (state: string) => {
-
-        if (!state) {
-
-            setDistricts([]);
-            setSubdistricts([]);
-            setVillages([]);
-            setSelectedState('');
-
-            return;
-        }
-
-        try {
-
-            setLoading(true);
-
-            const res = await axios.get<DistrictItem[]>(
-                `${API_BASE}/districts/${encodeURIComponent(state)}`
-            );
-
-            setDistricts(res.data);
-
-            setSubdistricts([]);
-            setVillages([]);
-
-            setSelectedState(state);
-
-            setSelectedDistrict('');
-            setSelectedSubdistrict('');
-
-            setError('');
-
-        } catch (err) {
-
-            setError('Failed to load districts');
-            console.log(err);
-
-        } finally {
-
-            setLoading(false);
-
-        }
-    };
-
-    // LOAD SUBDISTRICTS
-
-    const loadSubdistricts = async (district: string) => {
-
-        if (!district) {
-
-            setSubdistricts([]);
-            setVillages([]);
-            setSelectedDistrict('');
-
-            return;
-        }
-
-        try {
-
-            setLoading(true);
-
-            const res = await axios.get<SubdistrictItem[]>(
-                `${API_BASE}/subdistricts/${encodeURIComponent(district)}`
-            );
-
-            setSubdistricts(res.data);
-
-            setVillages([]);
-
-            setSelectedDistrict(district);
-
-            setSelectedSubdistrict('');
-
-            setError('');
-
-        } catch (err) {
-
-            setError('Failed to load subdistricts');
-            console.log(err);
-
-        } finally {
-
-            setLoading(false);
-
-        }
-    };
-
-    // LOAD VILLAGES
-
-    const loadVillages = async (subdistrict: string) => {
-
-        if (!subdistrict) {
-
-            setVillages([]);
-            setSelectedSubdistrict('');
-
-            return;
-        }
-
-        try {
-
-            setLoading(true);
-
-            const res = await axios.get<VillageItem[]>(
-                `${API_BASE}/villages/${encodeURIComponent(subdistrict)}`
-            );
-
-            setVillages(res.data);
-
-            setSelectedSubdistrict(subdistrict);
-
-            setError('');
-
-        } catch (err) {
-
-            setError('Failed to load villages');
-            console.log(err);
-
-        } finally {
-
-            setLoading(false);
-
-        }
-    };
-
-    // SEARCH VILLAGES
-
-    const searchVillage = async (value: string) => {
-
-        setSearch(value);
-
-        if (value.length < 2) {
-
-            setSearchResults([]);
-
-            return;
-        }
-
-        try {
-
-            setLoading(true);
-
-            const res = await axios.get<VillageItem[]>(
-                `${API_BASE}/search?q=${encodeURIComponent(value)}`
-            );
-
-            setSearchResults(res.data);
-
-            setError('');
-
-        } catch (err) {
-
-            setError('Search failed. Please try again.');
-            console.log(err);
-
-        } finally {
-
-            setLoading(false);
-
-        }
-    };
+import Link from 'next/link';
+
+const metrics = [
+    { label: 'Village records indexed', value: '6L+' },
+    { label: 'Districts covered', value: '700+' },
+    { label: 'Target API latency', value: '<150ms' },
+    { label: 'Free daily requests', value: '100' }
+];
+
+const workflows = [
+    {
+        title: 'Address onboarding',
+        text: 'Power structured state, district, sub-district, and village selectors in customer forms.'
+    },
+    {
+        title: 'Search experiences',
+        text: 'Add village autocomplete with consistent administrative context for every returned record.'
+    },
+    {
+        title: 'Operations dashboards',
+        text: 'Track usage, limits, and endpoint demand from client-ready analytics pages.'
+    }
+];
+
+const endpoints = [
+    ['GET', '/api/v1/location/states'],
+    ['GET', '/api/v1/location/districts/:state'],
+    ['GET', '/api/v1/location/subdistricts/:district'],
+    ['GET', '/api/v1/location/search?q=delhi']
+];
+
+export default function HomePage() {
 
     return (
-
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
-
-            {/* NAVBAR */}
-
-            <nav className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
-
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-                    <div className="flex justify-between items-center h-16">
-
-                        <div className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
-                            🗺️ India Geo API
+        <div>
+            <section className="border-b border-[var(--line)] bg-white">
+                <div className="page-shell grid gap-10 py-14 lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
+                    <div className="flex flex-col justify-center">
+                        <p className="mb-4 w-fit rounded-md border border-teal-100 bg-teal-50 px-3 py-2 text-sm font-semibold text-[var(--brand-strong)]">
+                            Production-ready address APIs for India
+                        </p>
+                        <h1 className="max-w-4xl text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
+                            Reliable village data for forms, search, and location products.
+                        </h1>
+                        <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--muted)]">
+                            VillageAPI gives teams clean geographic endpoints, API-key security, usage limits, and analytics without maintaining spreadsheets or custom import jobs.
+                        </p>
+                        <div className="mt-8 flex flex-wrap gap-3">
+                            <Link href="/docs" className="rounded-md bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[var(--brand-strong)]">
+                                Explore documentation
+                            </Link>
+                            <Link href="/pricing" className="rounded-md border border-[var(--line)] bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50">
+                                Compare plans
+                            </Link>
                         </div>
-
                     </div>
 
-                </div>
+                    <div className="panel overflow-hidden">
+                        <div className="border-b border-[var(--line)] bg-slate-50 px-5 py-4">
+                            <p className="text-sm font-semibold text-slate-950">Live API shape</p>
+                            <p className="mt-1 text-sm text-[var(--muted)]">Protected by your dashboard API key.</p>
+                        </div>
+                        <div className="bg-slate-950 p-5">
+                            <pre className="overflow-auto text-sm leading-7 text-teal-100">
+{`const response = await fetch('/api/v1/location/search?q=Rampur', {
+  headers: {
+    'x-api-key': 'sk_live_your_key'
+  }
+});
 
-            </nav>
-
-            {/* HERO */}
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
-
-                <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent">
-                    India Village API Platform
-                </h1>
-
-                <p className="text-lg md:text-xl text-slate-400 leading-relaxed mb-8">
-                    Production-grade SaaS platform providing village-level geographical APIs for India.
-                </p>
-
-                {/* STATS */}
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 py-8">
-
-                    {
-                        [
-                            '6+ Lakh Villages',
-                            '700+ Districts',
-                            'Fast REST APIs',
-                            'Production Ready'
-                        ].map((item, index) => (
-
-                            <div
-                                key={index}
-                                className="bg-slate-800/50 border border-slate-700 rounded-lg p-6"
-                            >
-
-                                <p className="text-xl font-semibold text-cyan-300">
-                                    {item}
-                                </p>
-
+const villages = await response.json();`}
+                            </pre>
+                        </div>
+                        <div className="grid grid-cols-2 border-t border-[var(--line)] bg-white">
+                            <div className="border-r border-[var(--line)] p-5">
+                                <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">Auth</p>
+                                <p className="mt-1 font-semibold text-slate-950">API key header</p>
                             </div>
-
-                        ))
-                    }
-
-                </div>
-
-            </div>
-
-            {/* ERROR */}
-
-            {
-                error && (
-
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-
-                        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 text-red-300">
-                            ⚠️ {error}
+                            <div className="p-5">
+                                <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">Format</p>
+                                <p className="mt-1 font-semibold text-slate-950">JSON responses</p>
+                            </div>
                         </div>
-
                     </div>
-
-                )
-            }
-
-            {/* LOADING */}
-
-            {
-                loading && (
-
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-
-                        <div className="flex items-center space-x-2 text-cyan-400">
-
-                            <div className="animate-spin h-5 w-5 border border-cyan-400 border-t-transparent rounded-full"></div>
-
-                            <span>Loading...</span>
-
-                        </div>
-
-                    </div>
-
-                )
-            }
-
-            {/* SEARCH */}
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-
-                <h2 className="text-3xl font-bold mb-8 text-cyan-300">
-                    Village Search
-                </h2>
-
-                <input
-                    type="text"
-                    placeholder="Search for villages..."
-                    value={search}
-                    onChange={(e) => searchVillage(e.target.value)}
-                    className="w-full md:w-96 px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white"
-                />
-
-                <br /><br />
-
-                {
-                    searchResults.map((item, index) => (
-
-                        <div
-                            key={index}
-                            className="bg-slate-800 border border-slate-700 rounded-lg p-5 mb-4"
-                        >
-
-                            <h3 className="text-lg font-semibold text-cyan-300 mb-2">
-                                {item.village}
-                            </h3>
-
-                            <p className="text-slate-400 text-sm">
-                                {item.sub_district},
-                                {' '}
-                                {item.district},
-                                {' '}
-                                {item.state}
-                            </p>
-
-                        </div>
-
-                    ))
-                }
-
-            </div>
-
-            {/* DROPDOWNS */}
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-
-                <h2 className="text-3xl font-bold mb-8 text-cyan-300">
-                    Hierarchical Selection
-                </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-                    {/* STATE */}
-
-                    <select
-                        value={selectedState}
-                        onChange={(e) => loadDistricts(e.target.value)}
-                        className="w-full px-4 py-3 rounded-lg bg-slate-700 border border-slate-600 text-white"
-                    >
-
-                        <option value="">
-                            Select State
-                        </option>
-
-                        {
-                            states.map((item, index) => (
-
-                                <option
-                                    key={index}
-                                    value={item.state}
-                                >
-                                    {item.state}
-                                </option>
-
-                            ))
-                        }
-
-                    </select>
-
-                    {/* DISTRICT */}
-
-                    <select
-                        value={selectedDistrict}
-                        onChange={(e) => loadSubdistricts(e.target.value)}
-                        className="w-full px-4 py-3 rounded-lg bg-slate-700 border border-slate-600 text-white"
-                    >
-
-                        <option value="">
-                            Select District
-                        </option>
-
-                        {
-                            districts.map((item, index) => (
-
-                                <option
-                                    key={index}
-                                    value={item.district}
-                                >
-                                    {item.district}
-                                </option>
-
-                            ))
-                        }
-
-                    </select>
-
-                    {/* SUBDISTRICT */}
-
-                    <select
-                        value={selectedSubdistrict}
-                        onChange={(e) => loadVillages(e.target.value)}
-                        className="w-full px-4 py-3 rounded-lg bg-slate-700 border border-slate-600 text-white"
-                    >
-
-                        <option value="">
-                            Select Subdistrict
-                        </option>
-
-                        {
-                            subdistricts.map((item, index) => (
-
-                                <option
-                                    key={index}
-                                    value={item.sub_district}
-                                >
-                                    {item.sub_district}
-                                </option>
-
-                            ))
-                        }
-
-                    </select>
-
-                    {/* VILLAGES */}
-
-                    <select
-                        className="w-full px-4 py-3 rounded-lg bg-slate-700 border border-slate-600 text-white"
-                    >
-
-                        <option value="">
-                            Select Village
-                        </option>
-
-                        {
-                            villages.map((item, index) => (
-
-                                <option
-                                    key={index}
-                                    value={item.village}
-                                >
-                                    {item.village}
-                                </option>
-
-                            ))
-                        }
-
-                    </select>
-
                 </div>
+            </section>
 
-            </div>
+            <section className="page-shell">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    {metrics.map((metric) => (
+                        <div key={metric.label} className="panel p-5">
+                            <p className="text-3xl font-bold text-slate-950">{metric.value}</p>
+                            <p className="mt-1 text-sm font-medium text-[var(--muted)]">{metric.label}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
 
+            <section className="page-shell grid gap-8 pt-0 lg:grid-cols-[0.75fr_1.25fr]">
+                <div>
+                    <p className="text-sm font-semibold text-[var(--brand)]">Use cases</p>
+                    <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">Built for repeated operational workflows</h2>
+                    <p className="mt-4 text-[var(--muted)]">
+                        The interface is intentionally simple: developers get clean docs, business users get usage visibility, and teams get predictable API behavior.
+                    </p>
+                </div>
+                <div className="grid gap-4 md:grid-cols-3">
+                    {workflows.map((workflow) => (
+                        <article key={workflow.title} className="panel p-5">
+                            <h3 className="font-semibold text-slate-950">{workflow.title}</h3>
+                            <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{workflow.text}</p>
+                        </article>
+                    ))}
+                </div>
+            </section>
+
+            <section className="border-y border-[var(--line)] bg-white">
+                <div className="page-shell">
+                    <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                        <div>
+                            <p className="text-sm font-semibold text-[var(--brand)]">API reference</p>
+                            <h2 className="mt-2 text-2xl font-bold text-slate-950">Core endpoints</h2>
+                        </div>
+                        <Link href="/docs" className="text-sm font-semibold text-[var(--brand-strong)] hover:underline">
+                            View complete docs
+                        </Link>
+                    </div>
+                    <div className="mt-5 grid gap-3 md:grid-cols-2">
+                        {endpoints.map(([method, path]) => (
+                            <div key={path} className="flex items-center gap-3 rounded-md border border-[var(--line)] bg-slate-50 p-3">
+                                <span className="rounded bg-teal-50 px-2 py-1 text-xs font-bold text-[var(--brand-strong)]">{method}</span>
+                                <code className="overflow-auto font-mono text-sm text-slate-800">{path}</code>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
         </div>
-
     );
+
 }

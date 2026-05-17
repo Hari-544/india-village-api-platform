@@ -21,6 +21,17 @@ async (req, res) => {
             password
         } = req.body;
 
+        if (!business_name || !email || !password) {
+
+            return res.status(400)
+            .json({
+                success: false,
+                message:
+                'Business name, email, and password are required'
+            });
+
+        }
+
         const apiKey =
         `sk_live_${uuidv4()}`;
 
@@ -75,6 +86,7 @@ async (req, res) => {
             business_name,
             email,
             role,
+            plan,
             api_key
             `,
             [
@@ -111,7 +123,15 @@ async (req, res) => {
 
                 role:
                 newUser.rows[0]
-                .role
+                .role,
+
+                plan:
+                newUser.rows[0]
+                .plan,
+
+                api_key:
+                newUser.rows[0]
+                .api_key
 
             }
 
@@ -141,6 +161,17 @@ async (req, res) => {
             password
         } = req.body;
 
+        if (!email || !password) {
+
+            return res.status(400)
+            .json({
+                success: false,
+                message:
+                'Email and password are required'
+            });
+
+        }
+
         const userResult =
         await pool.query(
             `
@@ -150,6 +181,7 @@ async (req, res) => {
             email,
             password,
             role,
+            plan,
             api_key
             FROM users
             WHERE email = $1
@@ -187,6 +219,28 @@ async (req, res) => {
                 message:
                 'Invalid email or password'
             });
+
+        }
+
+        if (!user.api_key) {
+
+            const apiKey =
+            `sk_live_${uuidv4()}`;
+
+            await pool.query(
+                `
+                UPDATE users
+                SET api_key = $1
+                WHERE id = $2
+                `,
+                [
+                    apiKey,
+                    user.id
+                ]
+            );
+
+            user.api_key =
+            apiKey;
 
         }
 
@@ -231,7 +285,13 @@ async (req, res) => {
                 user.email,
 
                 role:
-                user.role
+                user.role,
+
+                plan:
+                user.plan,
+
+                api_key:
+                user.api_key
 
             }
 
