@@ -25,6 +25,7 @@ export default function LoginPage() {
             });
 
             localStorage.setItem('token', res.data.token);
+            localStorage.setItem('user_email', res.data.user.email);
 
             if (res.data.user?.api_key) {
                 localStorage.setItem('api_key', res.data.user.api_key);

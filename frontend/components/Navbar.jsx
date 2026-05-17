@@ -1,63 +1,219 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 
-const links = [
-    { href: '/', label: 'Overview' },
-    { href: '/docs', label: 'Docs' },
-    { href: '/pricing', label: 'Pricing' },
-    { href: '/dashboard', label: 'Dashboard' },
-    { href: '/analytics', label: 'Analytics' }
-];
+import { usePathname }
+from 'next/navigation';
+
+import {
+    useEffect,
+    useState
+} from 'react';
+
+import {
+    logout
+} from '../utils/auth';
 
 export default function Navbar() {
 
-    const pathname = usePathname();
+    const pathname =
+    usePathname();
+
+    const [isLoggedIn, setIsLoggedIn] =
+    useState(false);
+
+    const [userEmail, setUserEmail] =
+    useState('');
+
+    useEffect(() => {
+
+        const token =
+        localStorage.getItem(
+            'token'
+        );
+
+        const email =
+        localStorage.getItem(
+            'user_email'
+        );
+
+        setIsLoggedIn(!!token);
+
+        if (email) {
+
+            setUserEmail(email);
+
+        }
+
+    }, []);
+
+    const navLink =
+    (href, label) => (
+
+        <Link
+            href={href}
+            className={`
+            text-sm
+            font-medium
+            transition-colors
+            ${
+                pathname === href
+
+                ? 'text-[var(--brand-strong)]'
+
+                : 'text-slate-600 hover:text-slate-950'
+            }
+            `}
+        >
+
+            {label}
+
+        </Link>
+
+    );
 
     return (
-        <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-white/95 backdrop-blur">
-            <nav className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-                <Link href="/" className="flex w-fit items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-md bg-[var(--brand)] text-sm font-black text-white shadow-sm">
-                        VA
-                    </span>
-                    <span>
-                        <span className="block text-base font-bold tracking-tight text-slate-950">VillageAPI</span>
-                        <span className="block text-xs font-medium text-[var(--muted)]">India address intelligence</span>
-                    </span>
+
+        <nav className="
+        sticky
+        top-0
+        z-50
+        border-b
+        border-[var(--line)]
+        bg-white/90
+        backdrop-blur
+        ">
+
+            <div className="
+            mx-auto
+            flex
+            max-w-7xl
+            items-center
+            justify-between
+            px-6
+            py-4
+            ">
+
+                <Link
+                    href="/"
+                    className="
+                    text-xl
+                    font-black
+                    tracking-tight
+                    text-slate-950
+                    "
+                >
+
+                    VillageAPI
+
                 </Link>
 
-                <div className="flex items-center gap-3 overflow-x-auto pb-1 lg:overflow-visible lg:pb-0">
-                    <div className="flex min-w-max items-center gap-1 rounded-md border border-[var(--line)] bg-slate-50 p-1">
-                    {links.map((link) => {
-                        const active = pathname === link.href;
+                <div className="
+                hidden
+                items-center
+                gap-6
+                md:flex
+                ">
 
-                        return (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                className={`rounded px-3 py-2 text-sm font-medium transition ${
-                                    active
-                                        ? 'bg-white text-[var(--brand-strong)] shadow-sm'
-                                        : 'text-slate-600 hover:text-slate-950'
-                                }`}
-                            >
-                                {link.label}
-                            </Link>
-                        );
-                    })}
-                    </div>
+                    {navLink('/', 'Overview')}
 
-                    <Link
-                        href="/login"
-                        className="min-w-max rounded-md bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
-                    >
-                        Login
-                    </Link>
+                    {navLink('/docs', 'Docs')}
+
+                    {navLink('/pricing', 'Pricing')}
+
+                    {navLink('/dashboard', 'Dashboard')}
+
+                    {navLink('/analytics', 'Analytics')}
+
                 </div>
-            </nav>
-        </header>
+
+                <div className="
+                flex
+                items-center
+                gap-3
+                ">
+
+                    {
+                        isLoggedIn ? (
+
+                            <>
+
+                                <div className="
+                                hidden
+                                rounded-full
+                                bg-teal-100
+                                px-4
+                                py-2
+                                text-sm
+                                font-semibold
+                                text-teal-800
+                                md:block
+                                ">
+
+                                    {
+                                        userEmail ||
+                                        'Signed in'
+                                    }
+
+                                </div>
+
+                                <button
+                                    onClick={logout}
+                                    className="
+                                    rounded-xl
+                                    border
+                                    border-[var(--line)]
+                                    px-4
+                                    py-2
+                                    text-sm
+                                    font-semibold
+                                    text-slate-700
+                                    transition
+                                    hover:bg-slate-100
+                                    "
+                                >
+
+                                    Logout
+
+                                </button>
+
+                            </>
+
+                        ) : (
+
+                            <Link
+                                href="/login"
+                            >
+
+                                <button
+                                    className="
+                                    rounded-xl
+                                    bg-[var(--brand)]
+                                    px-5
+                                    py-2
+                                    text-sm
+                                    font-semibold
+                                    text-white
+                                    transition
+                                    hover:opacity-90
+                                    "
+                                >
+
+                                    Login
+
+                                </button>
+
+                            </Link>
+
+                        )
+                    }
+
+                </div>
+
+            </div>
+
+        </nav>
+
     );
 
 }
