@@ -19,31 +19,35 @@ export default function Navbar() {
     const pathname =
     usePathname();
 
-    const [isLoggedIn, setIsLoggedIn] =
-    useState(false);
-
-    const [userEmail, setUserEmail] =
-    useState('');
+    const [session, setSession] =
+    useState({
+        isLoggedIn: false,
+        userEmail: ''
+    });
 
     useEffect(() => {
 
-        const token =
-        localStorage.getItem(
-            'token'
-        );
+        const frame =
+        requestAnimationFrame(() => {
 
-        const email =
-        localStorage.getItem(
-            'user_email'
-        );
+            const token =
+            localStorage.getItem(
+                'token'
+            );
 
-        setIsLoggedIn(!!token);
+            const email =
+            localStorage.getItem(
+                'user_email'
+            );
 
-        if (email) {
+            setSession({
+                isLoggedIn: !!token,
+                userEmail: email || ''
+            });
 
-            setUserEmail(email);
+        });
 
-        }
+        return () => cancelAnimationFrame(frame);
 
     }, []);
 
@@ -134,7 +138,7 @@ export default function Navbar() {
                 ">
 
                     {
-                        isLoggedIn ? (
+                        session.isLoggedIn ? (
 
                             <>
 
@@ -151,7 +155,7 @@ export default function Navbar() {
                                 ">
 
                                     {
-                                        userEmail ||
+                                        session.userEmail ||
                                         'Signed in'
                                     }
 

@@ -26,12 +26,14 @@ const limiter = rateLimit({
 
     windowMs: 15 * 60 * 1000,
 
-    max: 100,
+    max: 5000,
 
     message: {
         success: false,
-        message:
-            'Too many requests, try again later'
+        error: {
+            code: 'RATE_LIMITED',
+            message: 'Too many requests, try again later'
+        }
     }
 
 });
@@ -39,6 +41,18 @@ const limiter = rateLimit({
 app.use(cors());
 
 app.use(express.json());
+
+app.use((req, res, next) => {
+
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000');
+    res.setHeader('Content-Security-Policy', "default-src 'self'");
+
+    next();
+
+});
 
 app.use(limiter);
 

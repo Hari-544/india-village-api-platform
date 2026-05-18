@@ -7,8 +7,6 @@ import Link from 'next/link';
 
 import {
     CartesianGrid,
-    Line,
-    LineChart,
     ResponsiveContainer,
     Tooltip,
     XAxis,
